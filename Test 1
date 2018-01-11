@@ -1,4 +1,5 @@
 import boto3
+import csv
 
 #ec2client = boto3.client('ec2')
 #response = ec2client.describe_instances()
@@ -11,22 +12,38 @@ import boto3
 
 ec2 = boto3.resource('ec2')
 
+
+client = boto3.client('ec2')
+addresses_dict = client.describe_addresses()
+for eip_dict in addresses_dict['Addresses']:
+    print (eip_dict['PublicIp'])
+
+f = open('/Users/mikeb/test.csv','w')
+
 for i in ec2.instances.all():
     #print(i)
     intid = i.id
     inttype = i.instance_type
+#    inteip = i.public_ip
     #print (intid)
     #instanceid = instance.id
     for tag in i.tags:
         #print(tag)
-        #print (tag)
+#        print (tag)
         name = ""
         if "OURNAME" in tag['Key']:
             name=tag['Value']
+            break
         if "Name" in tag['Key']:
             name=tag['Value']
+            break
         if not name:
             name="No Name"
-    print ("Instance ID: {0} is named {1} and is an instance type of {2}.".format(intid,name,inttype))
+#    text = ("Instance ID: {0} is named {1} and is an instance type of {2}.".format(intid,name,inttype))
+    text = "{0},{1},{2},\n".format(intid, name, inttype)
+    f.write(text)
+
+f.close
+
 
 
