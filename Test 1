@@ -1,3 +1,4 @@
+import botocore.session
 import boto3
 import csv
 
@@ -10,15 +11,28 @@ import csv
         # This will print will output the value of the Dictionary key 'InstanceId'
 #        print(instance["InstanceId"])
 
+
+
+
+
+boto3.setup_default_session(profile_name='testaws')
+
 ec2 = boto3.resource('ec2')
 
-
 client = boto3.client('ec2')
+spam = client.describe_instances()
+for i in spam['Reservations']:
+    for x in i['Instances']:
+        inststate=x['State']
+        z = inststate['Name']
+        print (z)
+
+
 addresses_dict = client.describe_addresses()
 for eip_dict in addresses_dict['Addresses']:
     print (eip_dict['PublicIp'])
 
-f = open('/Users/mikeb/test.csv','w')
+#f = open('/Users/mikeb/test.csv','w')
 
 for i in ec2.instances.all():
     #print(i)
@@ -39,11 +53,12 @@ for i in ec2.instances.all():
             break
         if not name:
             name="No Name"
-#    text = ("Instance ID: {0} is named {1} and is an instance type of {2}.".format(intid,name,inttype))
-    text = "{0},{1},{2},\n".format(intid, name, inttype)
-    f.write(text)
+    text = ("Instance ID: {0} is named {1} and is an instance type of {2}.".format(intid,name,inttype))
+    print (text)
+#    text = "{0},{1},{2},\n".format(intid, name, inttype)
+#    f.write(text)
 
-f.close
+#f.close
 
 
 
